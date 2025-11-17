@@ -5,13 +5,17 @@ import { Configuration, OpenAIApi } from "openai";
 const app = express();
 app.use(express.json());
 
+// OpenAI setup
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
-app.post("/chat", async (req, res) => {
+// Use root route because Next.js API route already handles /api/chat
+app.post("/", async (req, res) => {
   const { message } = req.body;
+
+  if (!message) return res.status(400).json({ error: "No message provided" });
 
   try {
     const response = await openai.createChatCompletion({
@@ -26,4 +30,5 @@ app.post("/chat", async (req, res) => {
   }
 });
 
+// Export wrapped with serverless
 export default serverless(app);
